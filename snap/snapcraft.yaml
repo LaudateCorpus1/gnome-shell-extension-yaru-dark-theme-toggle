@@ -3,8 +3,8 @@ version: '1.0'
 summary: Yaru Dark Theme Toggle
 description: Toggles between Yaru and Yaru-dark
 
-grade: stable  
-confinement: classic 
+grade: stable
+confinement: classic
 base: core18
 
 parts:
