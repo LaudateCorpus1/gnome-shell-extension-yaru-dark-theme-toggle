@@ -2,9 +2,11 @@
 
 ![banner](https://i.imgur.com/fJKl029.png)
 
-All credit and work goes to https://github.com/jacobmischka/gnome-shell-extension-dark-theme-toggle
+Based on https://github.com/jacobmischka/gnome-shell-extension-dark-theme-toggle
 
-I just renamed the themes to work for yaru and yaru-dark
+With this gnome shell extentions one can toggle between dark and light gtk themes.
+If the current theme is Yaru it toggles between dark, light and the mixed theme with the light window and the dark headerbar.
+Thanks to @clobrano
 
 Snap work has been made by https://github.com/MarcusTomlinson
 
