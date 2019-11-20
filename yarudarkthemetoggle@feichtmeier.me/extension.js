@@ -5,7 +5,7 @@ const Gio = imports.gi.Gio;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 
-const LABEL_TEXT = 'Toggle Yaru variants';
+const LABEL_TEXT = 'Toggle Theme Variants (light/dark)';
 const SCHEMA_KEY = 'org.gnome.desktop.interface';
 const THEME_KEY = 'gtk-theme';
 const THEME_DIR = '/usr/share/themes/';
@@ -13,6 +13,7 @@ const LIGHT_ICON = 'weather-clear-symbolic';
 const DARK_ICON = 'weather-clear-night-symbolic';
 /* For Yaru only */
 const DAWN_ICON = 'weather-few-clouds-symbolic';
+const YARU_NAMES = ['Yaru', 'Communitheme']
 
 var button, settings, themes, icon;
 
@@ -46,7 +47,7 @@ function enable() {
     var curTheme = settings.get_string(THEME_KEY);
     var icon_name = LIGHT_ICON;
 
-    if (curTheme.includes('Yaru')) {
+    if (curTheme.includes('Yaru') || curTheme.includes('Communitheme')) {
         themes = build_options();
         var theme;
         for (theme of themes) {
@@ -77,18 +78,27 @@ function build_options() {
         return [];
     }
 
-    if (curTheme.includes('Yaru')) {
-        if (themes && themes[0].name.includes('Yaru')) {
+    var stem = curTheme;
+    if (curTheme.endsWith('-dark') || curTheme.endsWith('-light')) {
+        stem = curTheme.substring(0, curTheme.lastIndexOf('-'));
+    }
+
+    var id = YARU_NAMES.indexOf(stem);
+    if (id != -1) {
+        var yaru_name = YARU_NAMES[id]
+
+        if (themes && themes[0].name.includes(yaru_name)) {
             // themes already configured
             return themes;
         }
 
-        var yaru_light = new theme_node('Yaru-light', LIGHT_ICON);
-        var yaru_dark = new theme_node('Yaru-dark', DARK_ICON, yaru_light);
-        var yaru = new theme_node('Yaru', DAWN_ICON, yaru_dark);
-        yaru_light.next = yaru;
+        var light = new theme_node(yaru_name + '-light', LIGHT_ICON);
+        var dark = new theme_node(yaru_name + '-dark', DARK_ICON, light);
+        var base = new theme_node(yaru_name, DAWN_ICON, dark);
+        light.next = base;
 
-        return [yaru, yaru_dark, yaru_light];
+        return [base, dark, light];
+
     }
 
     // default both variants to current theme
@@ -96,10 +106,6 @@ function build_options() {
     var dark = new theme_node(curTheme, LIGHT_ICON, light);
     light.next = dark;
 
-    var stem = curTheme;
-    if (curTheme.endsWith('-dark')) {
-        stem = curTheme.substring(0, curTheme.lastIndexOf('-'));
-    }
 
     if (Gio.File.new_for_path(THEME_DIR.concat(stem)).query_exists(null)) {
         light.name = stem;
